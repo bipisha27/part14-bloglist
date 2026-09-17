@@ -11,6 +11,8 @@ return (
       <Link href="/">Home</Link>
       {" | "}
       <Link href="/blogs">Blogs</Link>
+      {" | "}
+      <Link href="/users">Users</Link>
       </nav>
       {children}
     </body>
