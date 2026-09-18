@@ -1,5 +1,7 @@
 import AuthSessionProvider from "./components/SessionProvider"
 import NavBar from "./components/NavBar"
+import { NotificationProvider } from "./components/NotificationContext"
+import Notification from "./components/Notification"
 import './globals.css'
 
 export default function RootLayout({
@@ -11,8 +13,11 @@ export default function RootLayout({
     <html lang="en">
       <body>
         <AuthSessionProvider>
-          <NavBar />
-          {children}
+          <NotificationProvider>
+            <NavBar />
+            <Notification />
+            <main>{children}</main>
+          </NotificationProvider>
         </AuthSessionProvider>
       </body>
     </html>

@@ -7,6 +7,7 @@ import { addBlog, likeBlog } from "../services/blogs"
 
 type BlogFormState = {
   error: string 
+  success?: string 
   values?: { title: string; author: string; url: string}
 }
 
@@ -39,7 +40,8 @@ export const createBlog = async(
   await addBlog(title, author, url)
 
   revalidatePath("/blogs")
-  redirect("/blogs")
+
+  return { error: "", success: "Blog created successfully."}
 }
 
 export const likeBlogAction = async (formData: FormData) => {
