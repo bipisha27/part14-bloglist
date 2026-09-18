@@ -1,35 +1,38 @@
-import { createBlog } from "@/app/actions/blogs";
+"use client"
+
+import { useActionState } from "react"
+import { createBlog } from "@/app/actions/blogs"
 
 const NewBlog = () => {
-  return(
+  const [state, formAction] = useActionState(createBlog, { error: "" })
+
+  return (
     <div>
-      <h2>
-        Create a new blog
-      </h2>
-      <form action={createBlog}>
+      <h2>Create a new blog</h2>
+      <form action={formAction}>
         <div>
           <label>
             Title
-            <input type="text" name="title" required />
+            <input type="text" name="title" required minLength={5} defaultValue={state.values?.title}/>
           </label>
         </div>
-
         <div>
           <label>
-            Author 
-            <input type="text" name="author" required />
+            Author
+            <input type="text" name="author" required minLength={5} defaultValue={state.values?.author}/>
           </label>
         </div>
         <div>
           <label>
             Url
-            <input type="text" name="url" required />
+            <input type="text" name="url" required minLength={5} defaultValue={state.values?.url}/>
           </label>
         </div>
         <button type="submit">Create</button>
+        {state.error && <p style={{ color: "red" }}> {state.error}</p>}
       </form>
     </div>
   )
 }
 
-export default NewBlog 
+export default NewBlog
