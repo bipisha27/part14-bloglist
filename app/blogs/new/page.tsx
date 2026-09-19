@@ -50,7 +50,7 @@ useEffect(() => {
         </div>
         <div className="mb-6">
           <label className="mb-2 block font-semibold text-gray-700">
-            Url
+            URL 
             <input
               type="text"
               name="url"
@@ -61,7 +61,7 @@ useEffect(() => {
             />
           </label>
         </div>
-        <button type="submit" className="rounded bg-blue-600 px-5 py-2 font-medium text-white hover:bg-blue-700">Create</button>
+        <button type="submit" data-testid="create-blog-button" className="rounded bg-blue-600 px-5 py-2 font-medium text-white hover:bg-blue-700">Create</button>
       </form>
     </div>
   )

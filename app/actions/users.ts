@@ -9,8 +9,13 @@ import { eq } from "drizzle-orm"
 import { getCurrentUser } from "../services/session"
 
 type RegisterFormState = {
-  error: string
-  values?: { username: string; name: string}
+  error?: string
+  errors?: {
+    username?: string
+    password?: string
+    passwordConfirm?: string
+  }
+  values?: { username: string; name: string }
 }
 
 export const registerUser = async(
@@ -24,25 +29,25 @@ export const registerUser = async(
 
   const values = {username, name}
 
-  if(!username || username.length < 4) {
-    return {error: "Username must be at least 4 characters long.", values}
-  }
+  if (!username || username.length < 4) {
+  return { errors: { username: "Username must be at least 4 characters long." }, values }
+}
 
-  if(!password || password.length < 4) {
-    return {error: "Password must be at least 4 characters long.", values}
-  }
+if (!password || password.length < 4) {
+  return { errors: { password: "Password must be at least 4 characters long." }, values }
+}
 
-  if(password != passwordConfirm) {
-    return {error: "Passwords do not match.", values}
-  }
+if (password !== passwordConfirm) {
+  return { errors: { passwordConfirm: "Passwords do not match." }, values }
+}
 
-  const existingUser = await db.query.users.findFirst({
-    where: eq(users.username, username)
-  })
+const existingUser = await db.query.users.findFirst({
+  where: eq(users.username, username),
+})
 
-  if(existingUser) {
-    return {error: "Username already exists.", values}
-  }
+if (existingUser) {
+  return { errors: { username: "Username already exists." }, values }
+}
 
   const passwordHash = await bcrypt.hash(password, 10)
 
@@ -54,7 +59,7 @@ export const registerUser = async(
 export const generateToken = async () => {
   const user = await getCurrentUser()
 
-  if(!user) {
+  if (!user) {
     redirect("/login")
   }
 
@@ -62,8 +67,10 @@ export const generateToken = async () => {
 
   await db
     .update(users)
-    .set({token})
+    .set({ token })
     .where(eq(users.id, user.id))
 
+
   revalidatePath("/me")
+  return token
 }

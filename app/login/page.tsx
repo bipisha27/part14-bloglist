@@ -46,7 +46,7 @@ export default function LoginPage() {
           </label>
         </div>
 
-        <button type="submit">Login</button>
+        <button type="submit" data-testid="login-button">Login</button>
       </form>
     </div>
   )

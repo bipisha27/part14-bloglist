@@ -1,7 +1,6 @@
-
 import { redirect } from "next/navigation"
 import { getCurrentUser } from "@/app/services/session"
-import { generateToken } from "@/app/actions/users"
+import GenerateTokenButton from "./GenerateTokenButton"
 import { markAsRead } from "../actions/blogs"
 import { db } from "@/db"
 import { eq } from "drizzle-orm"
@@ -37,121 +36,110 @@ export default async function MePage() {
       <div className="rounded-lg bg-white p-8 shadow">
         <h1 className="mb-6 text-3xl font-bold">My Page</h1>
 
-        <div className="space-y-3">
-          <p>
+        <div data-testid="user-profile" className="space-y-3">
+          <p data-testid="user-name">
             <strong>Name: </strong>
             {user.name}
           </p>
 
-          <p>
+          <p data-testid="user-username">
             <strong>Username: </strong>
             {user.username}
           </p>
 
-          <div className="pt-4">
+          <div data-testid="api-token-section" className="pt-4">
             <strong>API Token: </strong>
-
-            {user.token ? (
-              <p className="mt-2 break-all rounded bg-gray-100 p-3 font-mono text-sm">
-                {user.token}
-              </p>
-            ) : (
-              <p className="mt-2 text-gray-600">
-                No token has been generated yet.
-              </p>
-            )}
+            <GenerateTokenButton initialToken={user.token} />
           </div>
-<div className="pt-6">
-  <h2 className="mb-6 text-2xl font-bold">Reading List</h2>
 
-  <div className="mb-8">
-    <h3 className="mb-4 text-xl font-semibold">Unread</h3>
+          <div data-testid="reading-list-section" className="pt-6">
+            <h2 className="mb-6 text-2xl font-bold">Reading List</h2>
 
-    {unreadBlogs.length === 0 ? (
-      <p className="text-gray-600">No unread blogs.</p>
-    ) : (
-      <div className="space-y-4">
-        {unreadBlogs.map((item) => (
-          <div
-            key={item.id}
-            className="rounded border border-gray-200 p-4"
-          >
-            <h4 className="text-lg font-semibold">
-              {item.blog.title}
-            </h4>
+            <div data-testid="unread-section" className="mb-8">
+              <h3 className="mb-4 text-xl font-semibold">Unread</h3>
 
-            <p className="text-gray-700">
-              Author: {item.blog.author}
-            </p>
+              {unreadBlogs.length === 0 ? (
+                <p
+                  data-testid="empty-reading-list"
+                  className="text-gray-600"
+                >
+                  <span data-testid="no-unread-blogs">No unread blogs.</span>
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {unreadBlogs.map((item) => (
+                    <div
+                      key={item.id}
+                      className="rounded border border-gray-200 p-4"
+                    >
+                      <h4 className="text-lg font-semibold">
+                        {item.blog.title}
+                      </h4>
 
-            <a
-              href={item.blog.url}
-              className="text-blue-600 hover:underline"
-            >
-              {item.blog.url}
-            </a>
+                      <p className="text-gray-700">
+                        Author: {item.blog.author}
+                      </p>
 
-            <form action={markAsRead} className="mt-3">
-              <input
-                type="hidden"
-                name="id"
-                value={item.id}
-              />
+                      <a
+                        href={item.blog.url}
+                        className="text-blue-600 hover:underline"
+                      >
+                        {item.blog.url}
+                      </a>
 
-              <button
-                type="submit"
-                className="rounded bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
-              >
-                Mark as read
-              </button>
-            </form>
+                      <form action={markAsRead} className="mt-3">
+                        <input
+                          type="hidden"
+                          name="id"
+                          value={item.id}
+                        />
+
+                        <button
+                          type="submit"
+                          data-testid={`mark-read-${item.id}`}
+                          className="rounded bg-green-600 px-4 py-2 text-sm font-medium text-white hover:bg-green-700"
+                        >
+                          Mark as read
+                        </button>
+                      </form>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div>
+              <h3 className="mb-4 text-xl font-semibold">Read</h3>
+
+              {readBlogs.length === 0 ? (
+                <p className="text-gray-600">No read blogs.</p>
+              ) : (
+                <div className="space-y-4">
+                  {readBlogs.map((item) => (
+                    <div
+                      key={item.id}
+                      className="rounded border border-gray-200 p-4"
+                    >
+                      <h4 className="text-lg font-semibold">
+                        {item.blog.title}
+                      </h4>
+
+                      <p className="text-gray-700">
+                        Author: {item.blog.author}
+                      </p>
+
+                      <a
+                        href={item.blog.url}
+                        className="text-blue-600 hover:underline"
+                      >
+                        {item.blog.url}
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
-        ))}
-      </div>
-    )}
-  </div>
-
-  <div>
-    <h3 className="mb-4 text-xl font-semibold">Read</h3>
-
-    {readBlogs.length === 0 ? (
-      <p className="text-gray-600">No read blogs.</p>
-    ) : (
-      <div className="space-y-4">
-        {readBlogs.map((item) => (
-          <div
-            key={item.id}
-            className="rounded border border-gray-200 p-4"
-          >
-            <h4 className="text-lg font-semibold">
-              {item.blog.title}
-            </h4>
-
-            <p className="text-gray-700">
-              Author: {item.blog.author}
-            </p>
-
-            <a
-              href={item.blog.url}
-              className="text-blue-600 hover:underline"
-            >
-              {item.blog.url}
-            </a>
-          </div>
-        ))}
-      </div>
-    )}
-  </div>
-</div>
-
-          <form action={generateToken} className="pt-6">
-            <button
-              type="submit"
-              className="rounded bg-blue-600 px-5 py-2 font-medium text-white hover:bg-blue-700"
-            >
-              Generate new token
-            </button>
-          </form>
         </div>
       </div>
     </main>

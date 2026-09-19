@@ -21,11 +21,11 @@ const Blogs = async ({
       <Link href="/blogs/new" className="mb-6 inline-block rounded bg-blue-200 px-4 py-2 font-medium text-white hover:bg-blue-400">Create a new blog</Link>
 
       <form action="/blogs" className="mb-8 flex gap-3">
-        <input type="text" name="filter" defaultValue={filter} placeholder="Search by title ..." className="flex-1 rounded border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"/>
-        <button type="submit" className="rounded bg-gray-700 px-5 py-2 text-white hover:bg-gray-800">Search</button>
+        <input type="text" name="filter" data-testid="filter-input" defaultValue={filter} placeholder="Search by title ..." className="flex-1 rounded border border-gray-300 px-4 py-2 focus:border-blue-500 focus:outline-none"/>
+        <button type="submit" data-testid="search-button" className="rounded bg-gray-700 px-5 py-2 text-white hover:bg-gray-800">Search</button>
       </form>
 
-      <ul className="space-y-4">
+      <ul data-testid="blogs-list" className="space-y-4">
         {blogs.map((blog) => (
           <li key={blog.id} className="rounded-lg border border-gray-200 bg-white p-5 shadow-sm">
             <Link href={`/blogs/${blog.id}`} className="text-xl font-semibold text-blue-600 hover:text-blue-800">{blog.title}</Link> <p className="mt-2 text-gray-600"> by {blog.author}, {blog.likes} likes
