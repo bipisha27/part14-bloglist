@@ -34,6 +34,12 @@ export default function NavBar() {
 
           {" | "}
 
+          <Link href="/me" className="mr-5 hover:text-blue-300">
+          me 
+          </Link>
+
+          {" | "}
+
           <em className="mr-4 text-gray-300">
             {session.user?.name} logged in
           </em>

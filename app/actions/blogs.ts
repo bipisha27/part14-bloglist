@@ -3,6 +3,9 @@
 import {redirect} from "next/navigation"
 import { revalidatePath } from "next/cache"
 import { auth } from "@/auth"
+import { db } from "@/db"
+import { eq } from "drizzle-orm"
+import { readingList } from "@/db/schema"
 import { addBlog, likeBlog } from "../services/blogs"
 
 type BlogFormState = {
@@ -48,4 +51,41 @@ export const likeBlogAction = async (formData: FormData) => {
   const id = Number(formData.get("id"))
   await likeBlog(id)
   revalidatePath(`/blogs/${id}`)
+}
+
+export const addToReadingList = async (formData: FormData) => {
+  const session = await auth()
+
+  if(!session) {
+    redirect("/login")
+  }
+
+  const blogId = Number(formData.get("blogId"))
+
+  const user = await db.query.users.findFirst({
+    where: (users, {eq}) => eq(users.username, session.user?.email ?? "")
+  })
+
+  if(!user) {
+    redirect("/login")
+  }
+  
+  await db.insert(readingList).values({
+    userId: user.id,
+    blogId 
+  })
+
+  revalidatePath(`/blogs/${blogId}`)
+  revalidatePath("/me")
+}
+
+export const markAsRead = async (formData: FormData) => {
+  const id = Number(formData.get("id"))
+
+  await db
+    .update(readingList)
+    .set({read: true})
+    .where(eq(readingList.id, id))
+
+  revalidatePath("/me")
 }

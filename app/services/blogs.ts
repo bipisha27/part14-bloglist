@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm"
 import { db } from "../../db"
-import { blogs } from "../../db/schema"
+import { blogs, readingList } from "../../db/schema"
 import { getCurrentUser } from "./session"
 
 export const getBlogs = async () => {
@@ -9,11 +9,25 @@ export const getBlogs = async () => {
 
 export const addBlog = async (title: string, author: string, url: string) => {
   const user = await getCurrentUser()
-  if(!user) {
+
+  if (!user) {
     throw new Error("Not logged in")
   }
-  
-  await db.insert(blogs).values({title, author, url})
+
+  const [blog] = await db
+    .insert(blogs)
+    .values({
+      title,
+      author,
+      url,
+      userId: user.id
+    })
+    .returning()
+
+  await db.insert(readingList).values({
+    userId: user.id,
+    blogId: blog.id
+  })
 }
 
 export const getBlogById = async (id: number) => {
@@ -25,7 +39,7 @@ export const getBlogById = async (id: number) => {
 export const likeBlog = async (id: number) => {
   const blog = await getBlogById(id)
 
-  if(blog) {
+  if (blog) {
     await db
       .update(blogs)
       .set({likes: blog.likes + 1})
